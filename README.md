@@ -9,6 +9,8 @@ Currently, you will be unable to zoom out while the weapon is bolting, this is t
 
 Unfortunately, this way of doing the guns makes firerate upgrades useless. In the future, I'll make them useful again by making the bolting anim faster, but for now, they will almost not affect firerate at all.  
 
+Also, rarely, the anim doesnt play. I have no idea why that happens but its rare and hard to catch so it'll take me a while to fix it.  
+
 ## Disclaimer  
 MADE ONLY FOR GAMMA. I am unsure what happens with other modpacks / installations.  
 This mod is only compatible with base GAMMA weapons. Any other mods that adds bolt action guns will not have this feature, but they will still work fine. If new bolt actions are added to GAMMA, I will try my best to adapt them.  

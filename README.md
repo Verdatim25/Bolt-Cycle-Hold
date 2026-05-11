@@ -7,7 +7,10 @@ You will be unable to reload if you haven't bolted the weapon.
 
 Currently, you will be unable to zoom out while the weapon is bolting, this is to prevent the animation from skipping. If you try to press the zoom key while the weapon is bolting the script will auto press the key for you once the bolting animation is finished. I'll make this feature toggleable in the future.  
 
+Unfortunately, this way of doing the guns makes firerate upgrades useless. In the future, I'll make them useful again by making the bolting anim faster, but for now, they will almost not affect firerate at all.  
+
 ## Disclaimer  
+MADE ONLY FOR GAMMA. I am unsure what happens with other modpacks / installations.  
 This mod is only compatible with base GAMMA weapons. Any other mods that adds bolt action guns will not have this feature, but they will still work fine. If new bolt actions are added to GAMMA, I will try my best to adapt them.  
 
 ## Compatible Weapons  

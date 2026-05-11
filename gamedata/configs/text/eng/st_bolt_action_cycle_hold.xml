@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="windows-1251"?>
+
+<string_table>
+
+	<string id="ui_mcm_menu_bolt_cycle_hold">
+		<text>Bolt Cycle Hold</text>
+	</string>
+	
+	<string id="ui_mcm_menu_bolt_cycle_hold_title">
+		<text>Bolt Cycle Hold</text>
+	</string>
+	
+	<string id="ui_mcm_bolt_cycle_hold_cycle_on_keybind">
+		<text>Cycle Weapon On Keybind</text>
+	</string>
+	
+	<string id="ui_mcm_bolt_cycle_hold_cycle_on_keybind_desc">
+		<text>Normally, the weapon will cycle upon letting go of the fire button. Enabling this will disable the cycling on fire keybind release and instead enables pressing the keybind below to cycle the weapon.</text>
+	</string>
+	
+	<string id="ui_mcm_bolt_cycle_hold_cycle_keybind">
+		<text>Cycle Weapon Keybind</text>
+	</string>
+	
+	<string id="ui_mcm_bolt_cycle_hold_debug">
+		<text>Debug Logging (Very Verbose)</text>
+	</string>
+	
+</string_table>

@@ -24,6 +24,7 @@ local previous_text = ""
 text_disallowed = {}
 
 function send_not_allowed_message(text)
+	if not messages_allowed then return end
 	if not pending_cycle_anim then
 		time_since_last_message = (time_global() - time_at_last_message)
 		if ((time_since_last_message > 5000) or (text ~= previous_text)) and not text_disallowed[text] then
@@ -40,11 +41,13 @@ function send_not_allowed_message(text)
 end
 
 DEBUG = true
+messages_allowed = false
 
 function on_option_change()
 	cycle_on_keybind = ui_mcm.get("bolt_cycle_hold/cycle_on_keybind")
 	cycle_keybind = ui_mcm.get("bolt_cycle_hold/cycle_keybind")
 	DEBUG = ui_mcm.get("bolt_cycle_hold/debug")
+	messages_allowed = ui_mcm.get("bolt_cycle_hold/messages")
 end
 
 function actor_on_update()
@@ -103,6 +106,8 @@ function on_key_press(key, bind, dis, flags)
 			flags.ret_value = false
 		end
 		activate_cycle(obj)
+	elseif bind == key_bindings.kWPN_FIRE then
+		fire_key_held = true
 	end
 	--dbg_print("stupid weapon thing is %s", ini_sys:r_string_ex("wpn_remington700", "snd_shoot_actor"))
 end
@@ -115,6 +120,16 @@ function actor_on_weapon_fired(_, obj)
 	if (ini_sys:r_string_ex(obj:section(), "no_bolt_cycle_hold_on_last_round") == "on") and obj:get_ammo_in_magazine() == 1 then return end
 	dbg_print("ammo in magazine is %s", obj:get_ammo_in_magazine())
 	se_save_var(obj:id(), obj:name(), "need_cycle", true)
+	local hud_sec = ini_sys:r_string_ex(obj:section(), "hud")
+	local speed = ini_sys:r_string_ex(hud_sec, "anm_shots") or ""
+	speed = (str_explode(speed, ","))[3] or 1
+	local anim_length = game.get_motion_length(hud_sec, "anm_shots", speed)/1000
+	CreateTimeEvent("bolt_cycle_hold", "switch state to 0 on fire", anim_length-0.01, function(id)
+		local obj = get_object_by_id(id)
+		if not (obj and fire_key_held) then return true end
+		obj:switch_state(0)
+		return true
+	end, obj:id())
 	dbg_print("variable need cycle = true saved to weapon")
 end
 
@@ -181,7 +196,7 @@ function activate_cycle(obj)
 			dbg_print("delay switch state delay is %s, delay type is %s", delay, type(delay))
 			
 			-- this time event just doesnt work for some reason??
-			CreateTimeEvent("bolt_cycle_hold", "delay_switch_state", delay, function(id)
+			CreateTimeEvent("bolt_cycle_hold", "delay_switch_state", delay+0.01, function(id)
 				dbg_print("just work i beg of you, id is %s", id)
 
 				local obj = get_object_by_id(id)
@@ -210,7 +225,8 @@ function on_key_release(key)
 	obj = db.actor:active_item()
 	if not obj then return end
 	if not ini_sys:r_string_ex(obj:section(), "bolt_cycle_hold") == "on" or not obj:is_weapon() then return end
-	if bind ~= key_bindings.kWPN_FIRE or pending_cycle_anim then return end
+	if (bind ~= key_bindings.kWPN_FIRE) or pending_cycle_anim then return end
+	fire_key_held = false
 	if not cycle_on_keybind then
 		activate_cycle(obj)
 	end
@@ -220,12 +236,19 @@ local show_anim_done = false
 
 function bolt_cycle_anim(anim_table, obj)
 	dbg_print("anim_name is %s", anim_table.anm_name)
+	dbg_print("hud section is %s", ini_sys:r_string_ex(obj:section(), "hud"))
 	if not anim_table.anm_name then return end
 	if starts_with(anim_table.anm_name, "anm_hide") then
 		pending_cycle_anim = false
 		--se_save_var(obj:id(), obj:name(), "need_cycle", nil)
 		dbg_print("set pending cycle anim to false")
 	end
+	--[[
+	if starts_with(anim_table.anm_name, "anm_show") then
+		obj:switch_state(0)
+		dbg_print("setting state to 0 (anim_name starts with anim_show)")
+	end
+	]]
 	if starts_with(anim_table.anm_name, "anm_shot") then
 		shot_start_time = time_global()
 		dbg_print("shot_start_time is %s", shot_start_time)
@@ -261,7 +284,7 @@ function bolt_cycle_anim(anim_table, obj)
 			end
 		end
 	end
-	if starts_with(anim_table.anm_name, "anm_shots") then
+	if starts_with(anim_table.anm_name, "anm_shot") then
 		stop = true
 		local hud_sec = ini_sys:r_string_ex(obj:section(), "hud")
 		local speed = ini_sys:r_string_ex(hud_sec, anim_table.anm_name)
@@ -376,14 +399,26 @@ end
 function actor_on_hud_animation_end(obj, str1, unk1, unk2, no1)
 	dbg_print("unknown params are: %s, %s, %s, %s", str1, unk1, unk2, no1)
 	if not ini_sys:r_string_ex(obj:section(), "bolt_cycle_hold") == "on" or not obj:is_weapon() then return end 
-	if starts_with(str1, "anm_shots") then
+	if starts_with(unk1, "anm_shot") then
 		stop = false
+		--[[
+		CreateTimeEvent("bolt_cycle_hold", "buggy_mess", 0, function(id)
+			local obj = get_object_by_id(id)
+			if not obj then return true end
+			dbg_print("tried to swap the stupid state to 0")
+			obj:switch_state(0)
+			return true
+		end, obj:id())
+		]]
+		if (obj:get_state() == 5) then
+			--obj:switch_state(0)
+		end
 		dbg_print("stop set to false")
 	end
-	if starts_with(str1, "anm_cycle_bolt") then 
+	if starts_with(unk1, "anm_cycle_bolt") then 
 		se_save_var(obj:id(), obj:name(), "need_cycle", nil)
 		pending_cycle_anim = false
-		obj:switch_state(0)
+		--obj:switch_state(0)
 	end
 end
 

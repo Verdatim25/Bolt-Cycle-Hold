@@ -26,4 +26,12 @@
 		<text>Debug Logging (Very Verbose)</text>
 	</string>
 	
+	<string id="ui_mcm_bolt_cycle_hold_messages">
+		<text>Enable Cycle Messages</text>
+	</string>
+	
+	<string id="ui_mcm_bolt_cycle_hold_messages_desc">
+		<text>Turning this off will turn of the news message you get if you try to shoot or reload while the bolt hasn't been cycled. </text>
+	</string>
+	
 </string_table>

@@ -163,18 +163,20 @@ snd_3_layer			                                          	  = ambient\silence
 ![int_wpn_dvl_federal_wstfg_snd_silenced_actor]
 snd_3_layer			                                          	  = ambient\silence
 
-; toz 106
+; toz 106 (2 rnd)
 ![wpn_toz106]
 bolt_cycle_hold = on
+no_bolt_cycle_hold_on_last_round = on
+empty_bolt_hold_open_anim = on
 scripted_snd_cycle_bolt = weapons\toz106_real\bolt_standalone
 
 ![wpn_toz106_hud]
-anm_shots = toz106_shoot_last, shoot_last
+anm_shots = toz106_shoot_last, shoot_last, 2
 !anm_shots1
 !anm_shots2
 !anm_shot_l
 
-anm_shots_aim					= toz106_shoot_last_aim, shoot_last
+anm_shots_aim					= toz106_shoot_last_aim, shoot_last, 2
 !anm_shots_aim1
 !anm_shots_aim2
 !anm_shot_l_aim
@@ -186,6 +188,27 @@ snd_3_layer			                                          	  = ambient\silence
 
 ![int_wpn_toz106_snd_shoot_actor]
 snd_3_layer			                                          	  = ambient\silence
+
+; toz 106 (4 rnd)
+
+![wpn_toz106_m1]
+bolt_cycle_hold = on
+no_bolt_cycle_hold_on_last_round = on
+empty_bolt_hold_open_anim = on
+scripted_snd_cycle_bolt = weapons\toz106_real\bolt_standalone
+
+![wpn_toz106_m1_hud]
+anm_shots = toz106_shoot_last_fullstock, shoot_last, 2
+!anm_shots1
+!anm_shots2
+!anm_shot_l
+
+anm_shots_aim					= toz106_shoot_last_aim_fullstock, shoot_last, 2
+!anm_shots_aim1
+!anm_shots_aim2
+!anm_shot_l_aim
+
+anm_cycle_bolt = toz106_bolt_cycle_fullstock_1, bolt_cycle_4rnd
 
 ; m98b
 
@@ -274,3 +297,38 @@ scripted_snd_cycle_bolt = weapons\winchester1873\lever_standalone
 ![wpn_winchester1873_hud]
 anm_shots                                = win_shot_hand, win_shot
 anm_cycle_bolt = win_bolt_cycle_hand, win_bolt_cycle
+
+; steyr scout
+
+![wpn_steyr_scout_big]
+bolt_cycle_hold = on
+no_bolt_cycle_hold_on_last_round = on
+empty_bolt_hold_open_anim = on
+scripted_snd_cycle_bolt = weapons\toz106\bolt_standalone
+
+;weapons\toz106\bolt
+
+![wpn_steyr_scout_big_hud]
+anm_shots = toz106_shoot_last_fullstock, shoot_last, 2
+anm_cycle_bolt = toz106_bolt_cycle_fullstock_1, bolt_cycle
+anm_shot_l = toz106_shoot_last_fullstock, shoot_last, 2
+!anm_shots1
+!anm_shots2
+
+
+anm_shots_aim					= toz106_shoot_last_aim, shoot_last
+!anm_shots_aim1
+!anm_shots_aim2
+!anm_shot_l_aim
+
+![wpn_r700_snd_shoot_actor]
+snd_3_layer			                                          	  = ambient\silence
+
+![int_wpn_r700_snd_shoot_actor]
+snd_3_layer			                                          	  = ambient\silence
+
+![wpn_r700_snd_silenced_actor]
+snd_3_layer			                                          	  = ambient\silence
+
+![int_wpn_r700_snd_silenced_actor]
+snd_3_layer			                                          	  = ambient\silence

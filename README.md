@@ -21,10 +21,11 @@ Mosin
 R700 and its mods  
 Kar98k and its mods  
 dvl10 , both versions  
-Toz 106  
+Toz 106, both versions  
 M98b  
 AWSM  
 VSSK  
 SV98  
 Winchester 1873  
+Steyr Scout 7.62  
 

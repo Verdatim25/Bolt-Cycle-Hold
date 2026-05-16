@@ -145,6 +145,7 @@ function on_mcm_load()
         { id = "bolt_cycle_hold_title", type = "slide", text = "ui_mcm_menu_bolt_cycle_hold_title", link = "ui_options_slider_player", size = {512, 50}, spacing = 20 },
 		{id = "cycle_on_keybind", type = "check", val = 1, def = false, },
 		{id = "cycle_keybind", type = "key_bind", val = 2, def = keys.cycle},
+		{id = "queue_actions", type = "check", val = 1, def = true, },
 		{id = "messages", type = "check", val = 1, def = true, },
 		{id = "debug", type = "check", val = 1, def = false, },
       }

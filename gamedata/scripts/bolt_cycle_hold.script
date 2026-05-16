@@ -14,6 +14,8 @@ function on_game_start()
 	RegisterScriptCallback("on_option_change", on_option_change)
 	RegisterScriptCallback("on_game_load", on_option_change)
 	
+	RegisterScriptCallback("actor_on_hud_animation_mark", actor_on_hud_animation_mark)
+	
 	--RegisterScriptCallback("actor_on_update", actor_on_update)
 end
 
@@ -48,6 +50,7 @@ function on_option_change()
 	cycle_keybind = ui_mcm.get("bolt_cycle_hold/cycle_keybind")
 	DEBUG = ui_mcm.get("bolt_cycle_hold/debug")
 	messages_allowed = ui_mcm.get("bolt_cycle_hold/messages")
+	queue_actions = ui_mcm.get("bolt_cycle_hold/queue_actions")
 end
 
 function actor_on_update()
@@ -347,6 +350,7 @@ function perform_cycle_anim(obj, anim_table)
 			pending_cycle_anim = false
 			dbg_print("reset pending_cycle_anim to false and saving nil var")
 			se_save_var(id, name, "need_cycle", nil)
+			--[[
 			CreateTimeEvent("bolt_cycle_hold", "press queue items", 0, function()
 				for bind,v in pairs(action_queue) do
 					if v then
@@ -357,6 +361,7 @@ function perform_cycle_anim(obj, anim_table)
 				end
 				return true
 			end)
+			]]
 			return true
 		end, obj:id(), obj:name())
 	end
@@ -381,9 +386,9 @@ animation_common.add_anim_mutator(bolt_cycle_anim, 8)
 
 original_function = grok_casings_sounds.get_const_params
 grok_casings_sounds.get_const_params = function(wpn)
-	printf("wpn section is %s, bolt cycle hold check is %s", wpn:section(), ini_sys:r_string_ex(wpn:section(), "bolt_cycle_hold") ~= "on")
+	--printf("wpn section is %s, bolt cycle hold check is %s", wpn:section(), ini_sys:r_string_ex(wpn:section(), "bolt_cycle_hold") ~= "on")
 	if ini_sys:r_string_ex(wpn:section(), "bolt_cycle_hold") ~= "on" then
-		printf("returning original function")
+		--printf("returning original function")
 		return original_function(wpn)
 	end
 	if pending_cycle_anim then
@@ -435,5 +440,22 @@ function on_before_play_hud_sound(alias, parent, result)
 		result.volume_mult = 0
 		cancel_inspect_sound = false
 		dbg_print("cancelled inspect sound!")
+	end
+end
+
+-- early cycle complete
+
+function actor_on_hud_animation_mark(state, mark, obj, owner)
+	if obj:is_weapon() and ini_sys:r_string_ex(obj:section(), "bolt_cycle_hold") == "on" and mark == "cycle_complete" then
+		se_save_var(obj:id(), obj:name(), "need_cycle", nil)
+		pending_cycle_anim = false
+	end
+	if not queue_actions then return end
+	for bind,v in pairs(action_queue) do
+		if v then
+			dbg_print("tried to press bind %s", bind)
+			level.press_action(bind_to_dik(bind))
+			action_queue[bind] = nil
+		end
 	end
 end

@@ -3,6 +3,7 @@
 ![wpn_remington700]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\wpn_r700_new\bolt_standalone_fast
 ;rpm = 600
 ;anm_bore = remington700_new_shoot, 				shoot
 ;snd_shoot_actor = ambient\silence
@@ -20,8 +21,12 @@ snd_3_layer			                                          	  = ambient\silence
 snd_3_layer														  = ambient\silence
 
 ![wpn_remington700_hud]
+; remington700_new_shoot_retarget
+;anm_shots			 	= remington700_new_shoot_new, 				shoot
 anm_shots			 	= remington700_new_shoot_new, 				shoot
 anm_cycle_bolt		= remington700_new_bolt_cycle, bolt_cycle
+
+anm_cycle_bolt_fast = remington700_new_bolt_cycle_fast, bolt_cycle_fast
 
 ![wpn_remington700_archangel]
 bolt_cycle_hold = on
@@ -31,6 +36,8 @@ scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
 anm_shots			 		= remington700_archangel_new_shoot_new, shoot
 anm_cycle_bolt		= remington700_archangel_new_bolt_cycle, bolt_cycle
 
+anm_cycle_bolt_fast = remington700_archangel_new_bolt_cycle_fast, bolt_cycle_fast
+
 ![wpn_remington700_magpul_pro]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
@@ -38,6 +45,8 @@ scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
 ![wpn_remington700_magpul_pro_hud]
 anm_shots			 	= remington700_magpul_pro_new_shoot_new, 			shoot
 anm_cycle_bolt		= remington700_magpul_pro_new_bolt_cycle, bolt_cycle
+
+anm_cycle_bolt_fast = remington700_magpul_pro_new_bolt_cycle_fast, bolt_cycle_fast
 
 ![wpn_remington700_mod_x_gen3]
 bolt_cycle_hold = on
@@ -47,6 +56,8 @@ scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
 anm_shots			 		= remington700_mod_x_gen3_new_shoot_new, 				shoot
 anm_cycle_bolt		= remington700_mod_x_gen3_new_bolt_cycle, bolt_cycle
 
+anm_cycle_bolt_fast = remington700_mod_x_gen3_new_bolt_cycle_fast, bolt_cycle_fast
+
 ![wpn_remington700_lapua700]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
@@ -54,6 +65,8 @@ scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
 ![wpn_remington700_lapua700_hud]
 anm_shots			 		= remington700_magpul_pro_new_shoot_new, 				shoot
 anm_cycle_bolt		= remington700_magpul_pro_new_bolt_cycle, bolt_cycle
+
+anm_cycle_bolt_fast = remington700_magpul_pro_new_bolt_cycle_fast, bolt_cycle_fast
 
 ; mosin
 
@@ -110,22 +123,29 @@ snd_3_layer			                                       	 	  = ambient\silence
 ![wpn_k98_mauser_kit]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_l96_new\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\wpn_l96_new\bolt_standalone_fast
 
 ![wpn_k98_mod_silen98]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_l96_new\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\wpn_l96_new\bolt_standalone_fast
 
 ![wpn_k98_mod]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_l96_new\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\wpn_l96_new\bolt_standalone_fast
 
 ![wpn_k98_mod_hud]
 anm_shots			 	= remington700_new_shoot_new, 				shoot
 anm_cycle_bolt		= remington700_new_bolt_cycle, bolt_cycle
 
+anm_cycle_bolt_fast = remington700_new_bolt_cycle_fast, bolt_cycle_fast
+
 ![wpn_k98_mod_silen98_hud]
 anm_shots			 	= remington700_new_shoot_new, 				shoot
 anm_cycle_bolt		= remington700_new_bolt_cycle, bolt_cycle
+
+anm_cycle_bolt_fast = remington700_new_bolt_cycle_fast, bolt_cycle_fast
 
 ![wpn_k98mod_snd_shoot_actor]
 snd_3_layer			                                          	  = ambient\silence
@@ -144,18 +164,22 @@ snd_3_layer			                                          	  = ambient\silence
 ![wpn_dvl10]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\wpn_r700_new\bolt_standalone_fast
 
 ![wpn_dvl10_hud]
 anm_shots			 		= remington700_mod_x_gen3_new_shoot_new, 				shoot
 anm_cycle_bolt		= remington700_mod_x_gen3_new_bolt_cycle, bolt_cycle
+anm_cycle_bolt_fast		= remington700_mod_x_gen3_new_bolt_cycle_fast, bolt_cycle_fast
 
 ![wpn_dvl10_m1]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_r700_new\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\wpn_r700_new\bolt_standalone_fast
 
 ![wpn_dvl10_m1_hud]
 anm_shots			 		= remington700_mod_x_gen3_new_shoot_new, 				shoot
 anm_cycle_bolt		= remington700_mod_x_gen3_new_bolt_cycle, bolt_cycle
+anm_cycle_bolt_fast		= remington700_mod_x_gen3_new_bolt_cycle_fast, bolt_cycle_fast
 
 ![wpn_dvl_federal_wstfg_snd_silenced_actor]
 snd_3_layer			                                          	  = ambient\silence
@@ -215,9 +239,11 @@ anm_cycle_bolt = toz106_bolt_cycle_fullstock_1, bolt_cycle_4rnd
 ![wpn_m98b]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_m98_new\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\wpn_m98_new\bolt_standalone_fast
 
 ![wpn_m98b_hud]
 anm_cycle_bolt = m98b_new_bolt_cycle, bolt_cycle
+anm_cycle_bolt_fast = m98b_new_bolt_cycle_fast, bolt_cycle_fast
 anm_shots = m98b_new_shoot_new, shoot
 
 ![int_wpn_m98_wstfg_snd_shoot_actor]
@@ -234,10 +260,12 @@ snd_3_layer			                                          	  = ambient\silence
 ![wpn_l96a1m]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\wpn_l96_new\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\wpn_l96_new\bolt_standalone_fast
 
 ![wpn_l96a1m_hud]
 anm_shots = l96_awsm_new_shoot_new, shoot
 anm_cycle_bolt = l96_awsm_new_bolt_cycle, bolt_cycle
+anm_cycle_bolt_fast = l96_awsm_new_bolt_cycle_fast, bolt_cycle_fast
 
 ![wpn_l96m_wstfg_snd_shoot_actor]
 snd_3_layer			                                          	  = ambient\silence
@@ -271,10 +299,12 @@ anm_cycle_bolt_empty = barry_bolt_cycle_vssk_hands_empty, barry_bolt_cycle_vssk_
 ![wpn_sv98]
 bolt_cycle_hold = on
 scripted_snd_cycle_bolt = weapons\librarian_sv98\bolt_layer_standalone
+scripted_snd_cycle_bolt_fast = weapons\librarian_sv98\bolt_layer_standalone_fast
 
 ![wpn_sv98_hud]
 anm_shots										   = sv98_shoot_new, shoot, 0.855
 anm_cycle_bolt = sv98_bolt_cycle, bolt_cycle, 0.855
+anm_cycle_bolt_fast = sv98_bolt_cycle_fast, bolt_cycle_fast, 0.855
 
 ![wpn_sv98_snd_shoot_actor]
 snd_3_layer			                                          	  = ambient\silence
@@ -292,11 +322,13 @@ bolt_cycle_hold = on
 no_bolt_cycle_hold_on_last_round = on
 empty_bolt_hold_open_anim = on
 scripted_snd_cycle_bolt = weapons\winchester1873\lever_standalone
+scripted_snd_cycle_bolt_fast = weapons\winchester1873\lever_standalone_fast
 !scripted_snd_shots
 
 ![wpn_winchester1873_hud]
 anm_shots                                = win_shot_hand, win_shot
 anm_cycle_bolt = win_bolt_cycle_hand, win_bolt_cycle
+anm_cycle_bolt_fast = win_bolt_cycle_hand_fast, win_bolt_cycle_fast
 
 ; steyr scout
 
@@ -305,18 +337,20 @@ bolt_cycle_hold = on
 no_bolt_cycle_hold_on_last_round = on
 empty_bolt_hold_open_anim = on
 scripted_snd_cycle_bolt = weapons\toz106\bolt_standalone
+scripted_snd_cycle_bolt_fast = weapons\toz106\bolt_standalone_fast
 
 ;weapons\toz106\bolt
 
 ![wpn_steyr_scout_big_hud]
 anm_shots = toz106_shoot_last_fullstock, shoot_last, 2
 anm_cycle_bolt = toz106_bolt_cycle_fullstock_1, bolt_cycle
+anm_cycle_bolt_fast = toz106_bolt_cycle_fullstock_1_fast, bolt_cycle_fast
 anm_shot_l = toz106_shoot_last_fullstock, shoot_last, 2
 !anm_shots1
 !anm_shots2
 
 
-anm_shots_aim					= toz106_shoot_last_aim, shoot_last
+anm_shots_aim					= toz106_shoot_last_aim, shoot_last, 2
 !anm_shots_aim1
 !anm_shots_aim2
 !anm_shot_l_aim

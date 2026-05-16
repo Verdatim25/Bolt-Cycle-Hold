@@ -29,7 +29,6 @@
 	<string id="ui_mcm_bolt_cycle_hold_messages">
 		<text>Enable Cycle Messages</text>
 	</string>
-	
 	<string id="ui_mcm_bolt_cycle_hold_messages_desc">
 		<text>Turning this off will turn of the news message you get if you try to shoot or reload while the bolt hasn't been cycled. </text>
 	</string>
@@ -37,9 +36,15 @@
 	<string id="ui_mcm_bolt_cycle_hold_queue_actions">
 		<text>Queue zoom keybind</text>
 	</string>
-	
 	<string id="ui_mcm_bolt_cycle_hold_queue_actions_desc">
 		<text>With this enabled, pressing the zoom keybind while the weapon is cycling will put the key press into a queue, once the bolting is finished the zoom will be pressed automatically. Turning this off prevents this feature.</text>
+	</string>
+	
+	<string id="ui_mcm_bolt_cycle_hold_allow_fast_anims">
+		<text>Allow Fast Bolt Anims</text>
+	</string>
+	<string id="ui_mcm_bolt_cycle_hold_allow_fast_anims_desc">
+		<text>Enabling this will allow bolt action snipers to have fast anims when they have an rpm upgrade.</text>
 	</string>
 	
 </string_table>

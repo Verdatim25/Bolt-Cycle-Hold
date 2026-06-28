@@ -55,6 +55,7 @@ messages_allowed = false
 allow_fast_anims = true
 queue_actions = true
 cycle_on_keybind = false
+cycle_on_draw = true
 
 function on_option_change()
 	cycle_on_keybind = ui_mcm.get("bolt_cycle_hold/cycle_on_keybind")
@@ -63,6 +64,7 @@ function on_option_change()
 	messages_allowed = ui_mcm.get("bolt_cycle_hold/messages")
 	queue_actions = ui_mcm.get("bolt_cycle_hold/queue_actions")
 	allow_fast_anims = ui_mcm.get("bolt_cycle_hold/allow_fast_anims")
+	cycle_on_draw = ui_mcm.get("bolt_cycle_hold/cycle_on_draw")
 end
 
 function actor_on_update()
@@ -272,6 +274,7 @@ function bolt_cycle_anim(anim_table, obj)
 	if not anim_table.anm_name then return end
 	if starts_with(anim_table.anm_name, "anm_hide") then
 		pending_cycle_anim = false
+		RemoveTimeEvent("bolt_cycle_hold", "cycle_on_draw_interrupt")
 		--se_save_var(obj:id(), obj:name(), "need_cycle", nil)
 		dbg_print("set pending cycle anim to false")
 	end
@@ -337,6 +340,23 @@ function bolt_cycle_anim(anim_table, obj)
 			return true
 		end)
 		dbg_print("stop set to true")
+	end
+	if starts_with(anim_table.anm_name, "anm_show") and cycle_on_draw
+	and ini_sys:r_string_ex(obj:section(), "bolt_cycle_hold") == "on"
+	and se_load_var(obj:id(), obj:name(), "need_cycle") then
+		local hud_sec = ini_sys:r_string_ex(obj:section(), "hud")
+		local speed_str = ini_sys:r_string_ex(hud_sec, anim_table.anm_name) or ""
+		local speed = (str_explode(speed_str, ","))[3] or 1
+		local show_length = game.get_motion_length(hud_sec, anim_table.anm_name, speed) / 1000
+		RemoveTimeEvent("bolt_cycle_hold", "cycle_on_draw_interrupt")
+		CreateTimeEvent("bolt_cycle_hold", "cycle_on_draw_interrupt", show_length * 0.5, function(id)
+			local wpn = get_object_by_id(id)
+			if not (wpn and se_load_var(wpn:id(), wpn:name(), "need_cycle") and not pending_cycle_anim) then return true end
+			do_cycle_anim = true
+			wpn:switch_state(0)
+			dbg_print("cycle_on_draw: interrupted draw at 50%% for bolt cycle")
+			return true
+		end, obj:id())
 	end
 	if perform_cycle_anim(obj, anim_table) then return end
 	--check_for_show_anim(obj, anim_table)
@@ -473,7 +493,7 @@ function actor_on_hud_animation_end(obj, str1, unk1, unk2, no1)
 		end
 		dbg_print("stop set to false")
 	end
-	if starts_with(unk1, "anm_cycle_bolt") then 
+	if starts_with(unk1, "anm_cycle_bolt") then
 		se_save_var(obj:id(), obj:name(), "need_cycle", nil)
 		RemoveTimeEvent("bolt_cycle_hold", "set pending_cycle_anim to false")
 		pending_cycle_anim = false
@@ -504,6 +524,9 @@ function actor_on_hud_animation_mark(state, mark, obj, owner)
 		se_save_var(obj:id(), obj:name(), "need_cycle", nil)
 		pending_cycle_anim = false
 		RemoveTimeEvent("bolt_cycle_hold", "set pending_cycle_anim to false")
+		if obj:get_state() == 1 then
+			obj:switch_state(0)
+		end
 	end
 	if not queue_actions then return end
 	for bind,v in pairs(action_queue) do

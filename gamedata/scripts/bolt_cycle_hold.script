@@ -23,6 +23,24 @@ end
 
 function actor_on_first_update()
 	time_since_last_fire_keybind_press = time_global()
+	-- Patch ammo_check_mcm.ac_reload_blocked (AC-OKR hook) to block reload when bolt needs cycling.
+	-- AC-OKR checks this function before calling db.actor:reload_weapon(), so returning true here
+	-- prevents the reload state transition and the engine-level sound entirely.
+	if ammo_check_mcm and ammo_check_mcm.ac_reload_blocked then
+		local orig_blocked = ammo_check_mcm.ac_reload_blocked
+		ammo_check_mcm.ac_reload_blocked = function()
+			local obj = db.actor and db.actor:active_item()
+			if obj and obj:is_weapon()
+			and ini_sys:r_string_ex(obj:section(), "bolt_cycle_hold") == "on"
+			and se_load_var(obj:id(), obj:name(), "need_cycle")
+			then
+				send_not_allowed_message("reload")
+				dbg_print("ac_reload_blocked: reload blocked (need_cycle)")
+				return true
+			end
+			return orig_blocked()
+		end
+	end
 end
 	
 
@@ -112,14 +130,14 @@ function on_key_press(key, bind, dis, flags)
 	dbg_print("disallowed_keys[bind] is %s, bind is %s", disallowed_keys[bind], bind)
 	dbg_print("obj states is %s!", obj:get_state())
 	if disallowed_keys[bind] then
-		if pending_cycle_anim and ((bind == key_bindings.kWPN_FIRE) or (bind == key_bindings.kWPN_ZOOM)) then
-			dbg_print("cancelling wpn fire / zoom!")
-			if bind == key_bindings.kWPN_ZOOM then
+		if pending_cycle_anim and ((bind == key_bindings.kWPN_FIRE) or (bind == key_bindings.kWPN_ZOOM) or (bind == key_bindings.kWPN_RELOAD)) then
+			dbg_print("cancelling wpn fire / zoom / reload!")
+			if bind == key_bindings.kWPN_ZOOM or bind == key_bindings.kWPN_RELOAD then
 				action_queue[bind] = true
 			end
 			flags.ret_value = false
 		end
-		if se_load_var(obj:id(), obj:name(), "need_cycle") and (bind ~= key_bindings.kWPN_FIRE and bind ~= key_bindings.kWPN_ZOOM) then
+		if se_load_var(obj:id(), obj:name(), "need_cycle") and not pending_cycle_anim and (bind ~= key_bindings.kWPN_FIRE and bind ~= key_bindings.kWPN_ZOOM) then
 			dbg_print("cancelling wpn swap / reload!")
 			send_not_allowed_message("reload")
 			flags.ret_value = false
@@ -303,14 +321,13 @@ function bolt_cycle_anim(anim_table, obj)
 		]]
 	end
 	if pending_cycle_anim then
-		-- Suppress idle/bore requests during an active bolt cycle (e.g. ADS released mid-cycle).
-		-- Setting anm_name to "" causes the engine to find no matching motion and skip the play,
-		-- leaving anm_cycle_bolt to continue uninterrupted without a restart.
-		if anim_table.anm_name and (
-			starts_with(anim_table.anm_name, "anm_idle") or
-			starts_with(anim_table.anm_name, "anm_bore")
-		) then
-			anim_table.anm_name = ""
+		-- Suppress idle/bore animation requests during an active bolt cycle so anm_cycle_bolt
+		-- continues uninterrupted.
+		if anim_table.anm_name then
+			local name = anim_table.anm_name
+			if starts_with(name, "anm_idle") or starts_with(name, "anm_bore") then
+				anim_table.anm_name = ""
+			end
 		end
 		return
 	end

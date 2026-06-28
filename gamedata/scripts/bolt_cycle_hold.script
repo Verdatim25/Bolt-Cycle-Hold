@@ -23,6 +23,24 @@ end
 
 function actor_on_first_update()
 	time_since_last_fire_keybind_press = time_global()
+	-- Patch ammo_check_mcm.ac_reload_blocked (AC-OKR hook) to block reload when bolt needs cycling.
+	-- AC-OKR checks this function before calling db.actor:reload_weapon(), so returning true here
+	-- prevents the reload state transition and the engine-level sound entirely.
+	if ammo_check_mcm and ammo_check_mcm.ac_reload_blocked then
+		local orig_blocked = ammo_check_mcm.ac_reload_blocked
+		ammo_check_mcm.ac_reload_blocked = function()
+			local obj = db.actor and db.actor:active_item()
+			if obj and obj:is_weapon()
+			and ini_sys:r_string_ex(obj:section(), "bolt_cycle_hold") == "on"
+			and se_load_var(obj:id(), obj:name(), "need_cycle")
+			then
+				send_not_allowed_message("reload")
+				dbg_print("ac_reload_blocked: reload blocked (need_cycle)")
+				return true
+			end
+			return orig_blocked()
+		end
+	end
 end
 	
 
@@ -55,6 +73,7 @@ messages_allowed = false
 allow_fast_anims = true
 queue_actions = true
 cycle_on_keybind = false
+cycle_on_draw = true
 
 function on_option_change()
 	cycle_on_keybind = ui_mcm.get("bolt_cycle_hold/cycle_on_keybind")
@@ -63,6 +82,7 @@ function on_option_change()
 	messages_allowed = ui_mcm.get("bolt_cycle_hold/messages")
 	queue_actions = ui_mcm.get("bolt_cycle_hold/queue_actions")
 	allow_fast_anims = ui_mcm.get("bolt_cycle_hold/allow_fast_anims")
+	cycle_on_draw = ui_mcm.get("bolt_cycle_hold/cycle_on_draw")
 end
 
 function actor_on_update()
@@ -110,14 +130,14 @@ function on_key_press(key, bind, dis, flags)
 	dbg_print("disallowed_keys[bind] is %s, bind is %s", disallowed_keys[bind], bind)
 	dbg_print("obj states is %s!", obj:get_state())
 	if disallowed_keys[bind] then
-		if pending_cycle_anim and ((bind == key_bindings.kWPN_FIRE) or (bind == key_bindings.kWPN_ZOOM)) then
-			dbg_print("cancelling wpn fire / zoom!")
-			if bind == key_bindings.kWPN_ZOOM then
+		if pending_cycle_anim and ((bind == key_bindings.kWPN_FIRE) or (bind == key_bindings.kWPN_ZOOM) or (bind == key_bindings.kWPN_RELOAD)) then
+			dbg_print("cancelling wpn fire / zoom / reload!")
+			if bind == key_bindings.kWPN_ZOOM or bind == key_bindings.kWPN_RELOAD then
 				action_queue[bind] = true
 			end
 			flags.ret_value = false
 		end
-		if se_load_var(obj:id(), obj:name(), "need_cycle") and (bind ~= key_bindings.kWPN_FIRE and bind ~= key_bindings.kWPN_ZOOM) then
+		if se_load_var(obj:id(), obj:name(), "need_cycle") and not pending_cycle_anim and (bind ~= key_bindings.kWPN_FIRE and bind ~= key_bindings.kWPN_ZOOM) then
 			dbg_print("cancelling wpn swap / reload!")
 			send_not_allowed_message("reload")
 			flags.ret_value = false
@@ -272,6 +292,7 @@ function bolt_cycle_anim(anim_table, obj)
 	if not anim_table.anm_name then return end
 	if starts_with(anim_table.anm_name, "anm_hide") then
 		pending_cycle_anim = false
+		RemoveTimeEvent("bolt_cycle_hold", "cycle_on_draw_interrupt")
 		--se_save_var(obj:id(), obj:name(), "need_cycle", nil)
 		dbg_print("set pending cycle anim to false")
 	end
@@ -300,7 +321,15 @@ function bolt_cycle_anim(anim_table, obj)
 		]]
 	end
 	if pending_cycle_anim then
-		return 
+		-- Suppress idle/bore animation requests during an active bolt cycle so anm_cycle_bolt
+		-- continues uninterrupted.
+		if anim_table.anm_name then
+			local name = anim_table.anm_name
+			if starts_with(name, "anm_idle") or starts_with(name, "anm_bore") then
+				anim_table.anm_name = ""
+			end
+		end
+		return
 	end
 	if se_load_var(obj:id(), obj:name(), "need_cycle") then
 		if obj:get_ammo_in_magazine() == 0 then
@@ -328,6 +357,23 @@ function bolt_cycle_anim(anim_table, obj)
 			return true
 		end)
 		dbg_print("stop set to true")
+	end
+	if starts_with(anim_table.anm_name, "anm_show") and cycle_on_draw
+	and ini_sys:r_string_ex(obj:section(), "bolt_cycle_hold") == "on"
+	and se_load_var(obj:id(), obj:name(), "need_cycle") then
+		local hud_sec = ini_sys:r_string_ex(obj:section(), "hud")
+		local speed_str = ini_sys:r_string_ex(hud_sec, anim_table.anm_name) or ""
+		local speed = (str_explode(speed_str, ","))[3] or 1
+		local show_length = game.get_motion_length(hud_sec, anim_table.anm_name, speed) / 1000
+		RemoveTimeEvent("bolt_cycle_hold", "cycle_on_draw_interrupt")
+		CreateTimeEvent("bolt_cycle_hold", "cycle_on_draw_interrupt", show_length * 0.5, function(id)
+			local wpn = get_object_by_id(id)
+			if not (wpn and se_load_var(wpn:id(), wpn:name(), "need_cycle") and not pending_cycle_anim) then return true end
+			do_cycle_anim = true
+			wpn:switch_state(0)
+			dbg_print("cycle_on_draw: interrupted draw at 50%% for bolt cycle")
+			return true
+		end, obj:id())
 	end
 	if perform_cycle_anim(obj, anim_table) then return end
 	--check_for_show_anim(obj, anim_table)
@@ -464,7 +510,7 @@ function actor_on_hud_animation_end(obj, str1, unk1, unk2, no1)
 		end
 		dbg_print("stop set to false")
 	end
-	if starts_with(unk1, "anm_cycle_bolt") then 
+	if starts_with(unk1, "anm_cycle_bolt") then
 		se_save_var(obj:id(), obj:name(), "need_cycle", nil)
 		RemoveTimeEvent("bolt_cycle_hold", "set pending_cycle_anim to false")
 		pending_cycle_anim = false
@@ -495,6 +541,9 @@ function actor_on_hud_animation_mark(state, mark, obj, owner)
 		se_save_var(obj:id(), obj:name(), "need_cycle", nil)
 		pending_cycle_anim = false
 		RemoveTimeEvent("bolt_cycle_hold", "set pending_cycle_anim to false")
+		if obj:get_state() == 1 then
+			obj:switch_state(0)
+		end
 	end
 	if not queue_actions then return end
 	for bind,v in pairs(action_queue) do

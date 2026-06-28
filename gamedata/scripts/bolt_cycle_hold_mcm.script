@@ -147,6 +147,7 @@ function on_mcm_load()
 		{id = "cycle_on_keybind", type = "check", val = 1, def = false, },
 		{id = "cycle_keybind", type = "key_bind", val = 2, def = keys.cycle},
 		{id = "queue_actions", type = "check", val = 1, def = true, },
+		{id = "cycle_on_draw", type = "check", val = 1, def = true, },
 		{id = "allow_fast_anims", type = "check", val = 1, def = true, },
 		{id = "messages", type = "check", val = 1, def = true, },
 		{id = "debug", type = "check", val = 1, def = false, },
